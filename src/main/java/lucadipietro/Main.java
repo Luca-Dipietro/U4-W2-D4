@@ -6,10 +6,7 @@ import lucadipietro.entities.Order;
 import lucadipietro.entities.Product;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -21,7 +18,7 @@ public class Main {
 
         System.out.println("Lista Clienti");
 
-        Supplier<Costumer> costumersSupplier = () -> new Costumer(faker.number().randomNumber(), faker.name().fullName(), faker.number().numberBetween(1, 5));
+        Supplier<Costumer> costumersSupplier = () -> new Costumer(faker.number().randomNumber(), faker.howIMetYourMother().character(), faker.number().numberBetween(1, 5));
 
         List<Costumer> costumers = new ArrayList<>();
 
@@ -53,17 +50,17 @@ public class Main {
             LocalDate orderDate = LocalDate.now().minusDays(faker.number().numberBetween(1, 30));
             LocalDate deliveryDate = orderDate.plusDays(faker.number().numberBetween(1, 10));
             List<Product> orderProducts = new ArrayList<>();
-            int numRandomProducts = faker.number().numberBetween(1, 3);
+            int numRandomProducts = faker.number().numberBetween(1, 5);
             for (int i = 0; i < numRandomProducts; i++) {
                 int randomIndex = faker.number().numberBetween(0, products.size() - 1);
                 orderProducts.add(products.get(randomIndex));
             }
-            return new Order(faker.number().randomNumber(), faker.lorem().word(), orderDate, deliveryDate, orderProducts, costumers.get(faker.number().numberBetween(0, costumers.size())));
+            return new Order(faker.number().randomNumber(), "Delivering", orderDate, deliveryDate, orderProducts, costumers.get(faker.number().numberBetween(0, costumers.size())));
         };
 
         List<Order> orders = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             orders.add(orderSupplier.get());
         }
 
@@ -76,9 +73,33 @@ public class Main {
         Map<Costumer, List<Order>> ordersByCostumer = orders.stream()
                 .collect(Collectors.groupingBy(Order::getCostumer));
 
-        ordersByCostumer.forEach((costumer, ordersList) -> {
-            System.out.println(costumer);
-            ordersList.forEach(System.out::println);
+        ordersByCostumer.forEach((costumer, orderList) -> {
+            System.out.println("Il cliente: " + costumer + " ha fatto " + orderList.size() + " ordini");
+            System.out.println("Ordini: " + orderList);
         });
+
+        System.out.println();
+
+        System.out.println("Esercizio 2");
+
+        Map<Costumer, Double> totalSalesByCustomer = orders.stream()
+                .collect(Collectors.groupingBy(Order::getCostumer,
+                        Collectors.summingDouble(order -> order.getProducts().stream()
+                                .mapToDouble(Product::getPrice)
+                                .sum())));
+
+        totalSalesByCustomer.forEach((costumer, totalSales) -> {
+            System.out.println("Il cliente: " + costumer + " ha speso " + totalSales + " $");
+        });
+
+        System.out.println();
+
+        System.out.println("Esercizio 3");
+
+        List<Product> mostExpensiveProduct = products.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).limit(5).toList();
+
+        System.out.println("Prodotti Più costosi");
+        mostExpensiveProduct.forEach(System.out::println);
+
     }
 }

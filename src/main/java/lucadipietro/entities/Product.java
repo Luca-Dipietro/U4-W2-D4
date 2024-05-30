@@ -52,7 +52,7 @@ public class Product {
                 "id = " + id +
                 ", name = '" + name + '\'' +
                 ", category = '" + category + '\'' +
-                ", price = " + price +
+                ", price = " + price + " $" +
                 '}';
     }
 }
