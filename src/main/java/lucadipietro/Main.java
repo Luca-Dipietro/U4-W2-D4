@@ -101,5 +101,11 @@ public class Main {
         System.out.println("Prodotti Più costosi");
         mostExpensiveProduct.forEach(System.out::println);
 
+        System.out.println();
+
+        System.out.println("Esercizio 4");
+
+        double avaragePriceOrders = orders.stream().mapToDouble(order -> order.getProducts().stream().mapToDouble(Product::getPrice).sum()).average().orElse(0.0);
+        System.out.println(avaragePriceOrders);
     }
 }
